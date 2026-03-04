@@ -48,12 +48,96 @@ public class Jugador {
             int indice = 0;
             for (int contador : contadores) {
                 if (contador >= 2) {
-                    resultado += Grupo.values()[contador].toString() + " de " + NombreCarta.values()[indice].toString()
-                            + "\n";
+                    resultado += Grupo.values()[contador].toString() + " de " + NombreCarta.values()[indice].toString()  + "\n";
                 }
                 indice++;
             }
         }
+
+        resultado += "\n" + getEscalerasEncontradas();
+        resultado += "\nPuntaje total: " + getPuntaje();
+
         return resultado;
+    }
+
+    private boolean[] obtenerCartasEnEscalera() {
+
+        boolean[] cartasEnEscalera = new boolean[TOTAL_CARTAS];
+
+        for (Pinta pinta : Pinta.values()) {
+
+            boolean[] valores = new boolean[13];
+
+            for (int i = 0; i < cartas.length; i++) {
+                if (cartas[i].getPinta() == pinta) {
+                    int valor = cartas[i].getValorParaEscalera() - 1;
+                    valores[valor] = true;
+                }
+            }
+
+            int consecutivas = 0;
+            for (int i = 0; i < valores.length; i++) {
+
+                if (valores[i]) {
+                    consecutivas++;
+
+                    if (consecutivas >= 3) {
+                        for (int j = 0; j < cartas.length; j++) {
+                            if (cartas[j].getPinta() == pinta) {
+
+                                int valorCarta = cartas[j].getValorParaEscalera() - 1;
+
+                                if (valorCarta >= i - 2 && valorCarta <= i) {
+                                    cartasEnEscalera[j] = true;
+                                }
+                            }
+                        }
+                    }
+
+                } else {
+                    consecutivas = 0;
+                }
+            }
+        }
+
+        return cartasEnEscalera;
+    }
+
+    private String getEscalerasEncontradas() {
+
+        String mensaje = "";
+        boolean[] enEscalera = obtenerCartasEnEscalera();
+
+        for (Pinta pinta : Pinta.values()) {
+
+            int contador = 0;
+
+            for (int i = 0; i < cartas.length; i++) {
+                if (cartas[i].getPinta() == pinta && enEscalera[i]) {
+                    contador++;
+                }
+            }
+
+            if (contador >= 3) {
+                mensaje += "Escalera encontrada en " + pinta.toString() + "\n";
+            }
+        }
+
+        return mensaje;
+    }
+
+    public int getPuntaje() {
+
+        boolean[] enEscalera = obtenerCartasEnEscalera();
+        int puntaje = 0;
+
+        for (int i = 0; i < cartas.length; i++) {
+
+            if (!enEscalera[i]) {
+                puntaje += cartas[i].getValorParaPuntaje();
+            }
+        }
+
+        return puntaje;
     }
 }

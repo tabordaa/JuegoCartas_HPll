@@ -53,4 +53,20 @@ public class Carta {
         return NombreCarta.values()[residuo - 1];
     }
 
+    public int getValorParaEscalera() {
+        return this.getNombre().ordinal() + 1;
+    }
+
+    public int getValorParaPuntaje() {
+        switch (this.getNombre()) {
+            case AS:
+            case JACK:
+            case QUEEN:
+            case KING:
+                return 10;
+            default:
+                return this.getNombre().ordinal() + 1;
+        }
+    }
+
 }
